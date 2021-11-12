@@ -1,12 +1,5 @@
 #include "Galil.h"
 
-// Default constructor
-Galil::Galil() {
-	Functions = Funcs;
-	g = 0;
-	Funcs->GOpen(address, &g);
-}
-
 // Constructor with EmbeddedFunciton initialization
 Galil::Galil(EmbeddedFunctions* Funcs, GCStringIn address) {
 	Functions = Funcs;
@@ -16,7 +9,9 @@ Galil::Galil(EmbeddedFunctions* Funcs, GCStringIn address) {
 
 // Default destructor
 Galil::~Galil() {
-	
+	if (g) {
+		GClose(g); //Don't forget to close!
+	}
 }
 
 // DIGITAL OUTPUTS
