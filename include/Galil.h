@@ -1,5 +1,5 @@
 /*****************
-Galil.h v3
+Galil.h v6
 JAMES STEVENS 2020
 *****************/
 
@@ -23,11 +23,14 @@ terminated by a semicolon ';'
 #include <chrono>
 #include <Windows.h>
 
+#define SUCCESS_STRING ":"
+#define COM_STR_LEN 128
+
 class Galil {
 	public:
-		Galil() {};												// Default constructor
+		Galil();												// Default constructor. Initialize variables, open Galil connection and allocate memory. NOT AUTOMARKED
 		Galil(EmbeddedFunctions* Funcs, GCStringIn address);	// Constructor with EmbeddedFunciton initialization
-		~Galil();												// Default destructor
+		~Galil();												// Default destructor. Deallocate memory and close Galil connection. NOT AUTOMARKED
 
 		// DIGITAL OUTPUTS
 		void DigitalOutput(uint16_t value);						// Write to all 16 bits of digital output, 1 command to the Galil
@@ -45,7 +48,7 @@ class Galil {
 												// may use this function
 
 		bool CheckSuccessfulWrite();	// Check the string response from the Galil to check that the last 
-										// command executed correctly. 1 = succesful
+										// command executed correctly. 1 = succesful. NOT AUTOMARKED
 
 		// ANALOG FUNCITONS
 		float AnalogInput(uint8_t channel);						// Read Analog channel and return voltage			
@@ -54,18 +57,19 @@ class Galil {
 		void AnalogInputRange(uint8_t channel, uint8_t range);	// Configure the range of the input channel with
 																// the desired range code
 
-		// ENCODER / CONTROL FUNCTIONS
-		void WriteEncoder();				// Manually Set the encoder value to zero
-		int ReadEncoder();					// Read from Encoder
-		void setSetPoint(int s);			// Set the desired setpoint for control loops, counts or counts/sec
-		void setKp(double gain);			// Set the proportional gain of the controller used in controlLoop()
-		void setKi(double gain);			// Set the integral gain of the controller used in controlLoop()
-		void setKd(double gain);			// Set the derivative gain of the controller used in controlLoop()
-		void PositionControl(bool debug);	// Run the control loop. ReadEncoder() is the input to the loop. The motor is the output.
-											// The loop will run using the PID values specified in the data of this object, and has an 
-											// automatic timeout of 10s. You do not need to implement this function, it is defined in
-											// GalilControl.lib. debug = 1 for debugging (it will print some values).
-		void SpeedControl(bool debug);		// same as above. Setpoint interpreted as counts per second
+	// ENCODER / CONTROL FUNCTIONS
+		void WriteEncoder();								// Manually Set the encoder value to zero
+		int ReadEncoder();									// Read from Encoder
+		void setSetPoint(int s);							// Set the desired setpoint for control loops, counts or counts/sec
+		void setKp(double gain);							// Set the proportional gain of the controller used in controlLoop()
+		void setKi(double gain);							// Set the integral gain of the controller used in controlLoop()
+		void setKd(double gain);							// Set the derivative gain of the controller used in controlLoop()
+		void PositionControl(bool debug, int Motorchannel);	// Run the control loop. ReadEncoder() is the input to the loop. The motor is the output.
+															// The loop will run using the PID values specified in the data of this object, and has an 
+															// automatic timeout of 10s. You do not need to implement this function, it is defined in
+															// GalilControl.lib
+		void SpeedControl(bool debug, int Motorchannel);	// same as above. Setpoint interpreted as counts per second
+
 
 		// Operator overload for '<<' operator. So the user can say cout << Galil; This function should print out the
 		// output of GInfo and GVersion, with two newLines after each.
@@ -78,4 +82,5 @@ class Galil {
 		char ReadBuffer[1024];			// Buffer to restore responses from the Galil
 		double ControlParameters[3];	// Contains the controller gain values: K_p, K_i, K_d in that order 
 		int setPoint;					// Control Setpoint
+		GSize * ReadBytes;
 };
