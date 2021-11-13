@@ -13,12 +13,15 @@
 #include <gclibo.h>
 #include <gclib_errors.h>
 #include <gclib_record.h>
-
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <thread>
+#include <chrono>
 
 #include "Galil.h"
+
+#define ADDRESS "192.168.0.120 -d"
 
 using namespace System;
 using namespace System;
@@ -30,19 +33,21 @@ GCon g = 0; //var used to refer to a unique connection
 
 int main()
 {
-	char buf[1024]; //traffic buffer
-	char Command[128] = "";
+	EmbeddedFunctions * Funcs = new EmbeddedFunctions();
 
-	GOpen("192.168.0.120 -d", &g);
+	Galil * g = new Galil(Funcs, ADDRESS);
 
-	sprintf_s(Command, "AO0,0;");
+	uint16_t value = 0b1010101010101010;
 
+	for (int i = 0; i < 20; i++) {
+		g->DigitalOutput(value);
+		
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-	GCommand(g, Command, buf, sizeof(buf), 0);
+		value = ~value;
+	}
 
-	if (g)
-		GClose(g); //Don't forget to close!
-
+	delete g;
 
 	Console::WriteLine("Terminating!");
 	Console::ReadKey();

@@ -5,6 +5,7 @@ Galil::Galil(EmbeddedFunctions* Funcs, GCStringIn address) {
 	Functions = Funcs;
 	g = 0;
 	Funcs->GOpen(address, &g);
+	ReadBytes = new GSize();
 }
 
 // Default destructor
@@ -12,6 +13,8 @@ Galil::~Galil() {
 	if (g) {
 		GClose(g); //Don't forget to close!
 	}
+
+	delete ReadBytes;
 }
 
 // DIGITAL OUTPUTS
@@ -31,7 +34,7 @@ void Galil::DigitalOutput(uint16_t value) {
 		}
 		
 		// Send command to Galil controller
-		Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), 0);
+		Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
 	}
 }
 
@@ -53,7 +56,7 @@ void Galil::DigitalByteOutput(bool bank, uint8_t value) {
 		}
 
 		// Send command to Galil controller
-		Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), 0);
+		Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
 	}
 }
 
@@ -71,7 +74,7 @@ void Galil::DigitalBitOutput(bool val, uint8_t bit) {
 	}
 
 	// Send command to Galil controller
-	Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), 0);
+	Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
 }
 
 
