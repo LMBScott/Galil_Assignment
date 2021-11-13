@@ -93,6 +93,8 @@ uint16_t Galil::DigitalInput() {
 
 		output |= (bitVal << i);
 	}
+
+	return output;
 }
 
 // Read either high or low byte, as specified by user in 'bank'
@@ -113,6 +115,8 @@ uint8_t Galil::DigitalByteInput(bool bank) {
 
 		output |= (bitVal << i);
 	}
+
+	return output;
 }
 
 // Read single bit from current digital inputs. Above functions
@@ -190,6 +194,8 @@ int Galil::ReadEncoder() {
 
 	// Send command to Galil controller
 	Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
+
+	return std::stoi(ReadBuffer);
 }
 
 // Set the desired setpoint for control loops, counts or counts/sec
@@ -215,6 +221,13 @@ void Galil::setKd(double gain) {
 // Operator overload for '<<' operator. So the user can say cout << Galil; This function should print out the
 // output of GInfo and GVersion, with two newLines after each.
 std::ostream& operator<<(std::ostream& output, Galil& galil) {
-	GCStringOut infoBuffer = new char[COM_STR_LEN];
-	output << galil.Functions->GInfo(galil.g, infoBuffer, sizeof(infoBuffer));
+	GCStringOut infoBuffer = new char[INFO_STR_LEN];
+	GCStringOut verBuffer = new char[INFO_STR_LEN];
+	galil.Functions->GInfo(galil.g, infoBuffer, sizeof(infoBuffer));
+	galil.Functions->GVersion(infoBuffer, sizeof(infoBuffer));
+	output << infoBuffer << std::endl << std::endl;
+	output << verBuffer << std::endl << std::endl;
+	delete [] infoBuffer;
+	delete [] verBuffer;
+	return output;
 }

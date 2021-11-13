@@ -25,6 +25,7 @@ terminated by a semicolon ';'
 
 #define SUCCESS_STRING ":"
 #define COM_STR_LEN 128
+#define INFO_STR_LEN 1024
 
 class Galil {
 	public:
