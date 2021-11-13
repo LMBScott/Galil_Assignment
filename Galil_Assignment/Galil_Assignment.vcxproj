@@ -79,7 +79,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\include</AdditionalIncludeDirectories>
-      <AdditionalUsingDirectories>$(SolutionDir)\bin</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>$(SolutionDir)\dll</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>GalilControl_Win32_Debug.lib;GalilControl_Win32_Release.lib;GalilControl_x64_Debug.lib;GalilControl_x64_Release.lib;gclib.lib;gclib_64.lib;gclibo.lib;gclibo_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
