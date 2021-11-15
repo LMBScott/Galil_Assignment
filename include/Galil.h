@@ -23,6 +23,7 @@ terminated by a semicolon ';'
 #include <chrono>
 #include <Windows.h>
 
+#define DEFAULT_ADDRESS "192.168.0.120 -d"
 #define SUCCESS_STRING ":"
 #define COM_STR_LEN 128
 #define INFO_STR_LEN 1024

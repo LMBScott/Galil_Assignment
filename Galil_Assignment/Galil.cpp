@@ -1,20 +1,28 @@
 #include "Galil.h"
 
+Galil::Galil() {
+	Functions = new EmbeddedFunctions();
+	g = 0;
+	Functions->GOpen(DEFAULT_ADDRESS, &g);
+	ReadBytes = new GSize();
+}
+
 // Constructor with EmbeddedFunciton initialization
 Galil::Galil(EmbeddedFunctions* Funcs, GCStringIn address) {
 	Functions = Funcs;
 	g = 0;
-	Funcs->GOpen(address, &g);
+	Functions->GOpen(address, &g);
 	ReadBytes = new GSize();
 }
 
 // Default destructor
 Galil::~Galil() {
 	if (g) {
-		GClose(g); //Don't forget to close!
+		GClose(g);
 	}
 
 	delete ReadBytes;
+	delete Functions;
 }
 
 // DIGITAL OUTPUTS
@@ -85,16 +93,17 @@ void Galil::DigitalBitOutput(bool val, uint8_t bit) {
 uint16_t Galil::DigitalInput() {
 	char Command[COM_STR_LEN] = "";
 	uint16_t output = 0;
-
+	
+	// Read each bit of digital input and store in a 16-bit integer
 	for (int i = 0; i < 16; i++) {
 		sprintf_s(Command, "MG @IN[%d];", i);
 
 		// Send command to Galil controller
 		Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
 		
-		uint16_t bitVal = std::stoi(ReadBuffer);
+		uint16_t bitVal = std::stoi(ReadBuffer); // Convert bit value string to integer
 
-		output |= (bitVal << i);
+		output |= (bitVal << i); // Set corresponding bit of output to value of ith bit
 	}
 
 	return output;
@@ -108,15 +117,16 @@ uint8_t Galil::DigitalByteInput(bool bank) {
 
 	int offset = bank ? 8 : 0; // Offset bit index by 8 for high byte bank
 
+	// Read each bit of a given digital input byte and store in an 8-bit integer
 	for (int i = 0; i < 8; i++) {
 		sprintf_s(Command, "MG @IN[%d];", i + offset);
 
 		// Send command to Galil controller
 		Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
 
-		uint8_t bitVal = std::stoi(ReadBuffer);
+		uint8_t bitVal = std::stoi(ReadBuffer); // Convert bit value string to integer
 
-		output |= (bitVal << i);
+		output |= (bitVal << i); // Set corresponding bit of output to value of ith bit
 	}
 
 	return output;
@@ -130,9 +140,10 @@ bool Galil::DigitalBitInput(uint8_t bit) {
 	sprintf_s(Command, "MG @IN[%d];", bit);
 
 	// Send command to Galil controller
+	// Get digital input value as a string
 	Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
 
-	return std::stoi(ReadBuffer);
+	return std::stoi(ReadBuffer); // Convert digital input string to integer and return
 }
 
 
@@ -151,9 +162,10 @@ float Galil::AnalogInput(uint8_t channel) {
 	sprintf_s(Command, "MG @AN[%d];", channel);
 
 	// Send command to Galil controller
+	// Get analog input value as a string
 	Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
 
-	return std::stof(ReadBuffer);
+	return std::stof(ReadBuffer); // Convert analog input string to float and return
 }
 
 // Write to any channel of the Galil, send voltages as

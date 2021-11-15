@@ -37,10 +37,15 @@ int main()
 	EmbeddedFunctions * Funcs = new EmbeddedFunctions();
 
 	Galil * g = new Galil(Funcs, ADDRESS);
+
+	g->WriteEncoder();
 	
-	for (int i = 0; i < 8; i++) {
-		Console::WriteLine("Input {0:N} value: {1:N}", i, g->AnalogInput(i));
-	}
+	g->setSetPoint(50);
+	g->setKp(0.5);
+	g->setKd(0.1);
+	g->setKi(0.05);
+	
+	g->PositionControl(true, 0);
 
 	delete g;
 
