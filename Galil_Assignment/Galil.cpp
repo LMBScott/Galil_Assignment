@@ -42,7 +42,7 @@ void Galil::DigitalOutput(uint16_t value) {
 // 0 = low, 1 = high
 void Galil::DigitalByteOutput(bool bank, uint8_t value) {
 	char Command[COM_STR_LEN] = "";
-	int offset = bank ? 8 : 1; // Offset bit index by 8 for high byte bank
+	int offset = bank ? 8 : 0; // Offset bit index by 8 for high byte bank
 
 	for (int i = 0; i < 8; i++) {
 		int bitVal = (value >> i) & 0b1; // Get ith bit of "value" input
@@ -106,7 +106,7 @@ uint8_t Galil::DigitalByteInput(bool bank) {
 	char Command[COM_STR_LEN] = "";
 	uint8_t output = 0;
 
-	int offset = bank ? 8 : 1; // Offset bit index by 8 for high byte bank
+	int offset = bank ? 8 : 0; // Offset bit index by 8 for high byte bank
 
 	for (int i = 0; i < 8; i++) {
 		sprintf_s(Command, "MG @IN[%d];", i + offset);
