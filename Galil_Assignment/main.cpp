@@ -18,6 +18,7 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <bitset>
 
 #include "Galil.h"
 
@@ -36,8 +37,10 @@ int main()
 	EmbeddedFunctions * Funcs = new EmbeddedFunctions();
 
 	Galil * g = new Galil(Funcs, ADDRESS);
-
-	std::cout << *g;
+	
+	for (int i = 0; i < 8; i++) {
+		Console::WriteLine("Input {0:N} value: {1:N}", i, g->AnalogInput(i));
+	}
 
 	delete g;
 
