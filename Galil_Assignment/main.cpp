@@ -37,15 +37,7 @@ int main()
 
 	Galil * g = new Galil(Funcs, ADDRESS);
 
-	uint16_t value = 0b1010101010101010;
-
-	for (int i = 0; i < 20; i++) {
-		g->DigitalOutput(value);
-		
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-		value = ~value;
-	}
+	std::cout << *g;
 
 	delete g;
 
