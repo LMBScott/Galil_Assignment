@@ -33,16 +33,8 @@ void Galil::DigitalOutput(uint16_t value) {
 
 	for (int i = 0; i < 16; i++) {
 		int bitVal = (value >> i) & 0b1; // Get ith bit of "value" input
-		if (bitVal) {
-			// Bit was 1, set corresponding digital output bit to 1
-			sprintf_s(Command, "SB %d;", i);
-		} else {
-			// Bit was 0, set corresponding digital output bit to 0
-			sprintf_s(Command, "CB %d;", i);
-		}
-		
-		// Send command to Galil controller
-		Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
+
+		DigitalBitOutput(bitVal, i);
 	}
 }
 
@@ -54,17 +46,8 @@ void Galil::DigitalByteOutput(bool bank, uint8_t value) {
 
 	for (int i = 0; i < 8; i++) {
 		int bitVal = (value >> i) & 0b1; // Get ith bit of "value" input
-		if (bitVal) {
-			// Bit is 1, set corresponding digital output bit to 1
-			sprintf_s(Command, "SB %d;", i + offset);
-		}
-		else {
-			// Bit is 0, set corresponding digital output bit to 0
-			sprintf_s(Command, "CB %d;", i + offset);
-		}
-
-		// Send command to Galil controller
-		Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
+		
+		DigitalBitOutput(bitVal, i + offset);
 	}
 }
 
@@ -96,12 +79,7 @@ uint16_t Galil::DigitalInput() {
 	
 	// Read each bit of digital input and store in a 16-bit integer
 	for (int i = 0; i < 16; i++) {
-		sprintf_s(Command, "MG @IN[%d];", i);
-
-		// Send command to Galil controller
-		Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
-		
-		uint16_t bitVal = std::stoi(ReadBuffer); // Convert bit value string to integer
+		uint16_t bitVal = (int)DigitalBitInput(i); // Convert bit value string to integer
 
 		output |= (bitVal << i); // Set corresponding bit of output to value of ith bit
 	}
@@ -119,12 +97,7 @@ uint8_t Galil::DigitalByteInput(bool bank) {
 
 	// Read each bit of a given digital input byte and store in an 8-bit integer
 	for (int i = 0; i < 8; i++) {
-		sprintf_s(Command, "MG @IN[%d];", i + offset);
-
-		// Send command to Galil controller
-		Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
-
-		uint8_t bitVal = std::stoi(ReadBuffer); // Convert bit value string to integer
+		uint8_t bitVal = (int)DigitalBitInput(i + offset); // Convert bit value string to integer
 
 		output |= (bitVal << i); // Set corresponding bit of output to value of ith bit
 	}
@@ -143,7 +116,7 @@ bool Galil::DigitalBitInput(uint8_t bit) {
 	// Get digital input value as a string
 	Functions->GCommand(g, Command, ReadBuffer, sizeof(ReadBuffer), ReadBytes);
 
-	return std::stoi(ReadBuffer); // Convert digital input string to integer and return
+	return (bool)std::stoi(ReadBuffer); // Convert digital input string to integer and return
 }
 
 
