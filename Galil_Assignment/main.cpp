@@ -30,22 +30,13 @@ using namespace System::IO;
 using namespace System::Collections::Generic;
 using namespace System::Threading::Tasks;
 
-GCon g = 0; //var used to refer to a unique connection
-
 int main()
 {
 	EmbeddedFunctions * Funcs = new EmbeddedFunctions();
 
 	Galil * g = new Galil(Funcs, ADDRESS);
 
-	g->WriteEncoder();
 	
-	g->setSetPoint(50);
-	g->setKp(0.5);
-	g->setKd(0.1);
-	g->setKi(0.05);
-	
-	g->PositionControl(true, 0);
 
 	delete g;
 
